@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="tangy-p2p-plugin" version="0.0.1" xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+    <name>TangyP2PPlugin</name>
+    <js-module name="TangyP2PPlugin" src="www/TangyP2PPlugin.js">
+        <clobbers target="TangyP2PPlugin"/>
+    </js-module>
+    <platform name="android">
+        <config-file parent="/*" target="res/xml/config.xml">
+            <feature name="TangyP2PPlugin">
+                <param name="android-package" value="org.rti.tangerine.p2p.TangyP2PPlugin"/>
+            </feature>
+        </config-file>
+        <config-file parent="/*" target="AndroidManifest.xml"></config-file>
+        <source-file src="src/android/org/rti/tangerine/p2p/TangyP2PPlugin.java" target-dir="src/org/rti/tangerine/p2p/"/>
+        <source-file src="src/android/org/drulabs/localdash/db/DBAdapter.java" target-dir="src/org/drulabs/localdash/db/"/>
+        <source-file src="src/android/org/drulabs/localdash/db/DBHelper.java" target-dir="src/org/drulabs/localdash/db/"/>
+        <source-file src="src/android/org/drulabs/localdash/model/ChatDTO.java" target-dir="src/org/drulabs/localdash/model/"/>
+        <source-file src="src/android/org/drulabs/localdash/model/DeviceDTO.java" target-dir="src/org/drulabs/localdash/model/"/>
+        <source-file src="src/android/org/drulabs/localdash/nsddiscovery/NsdHelper.java" target-dir="src/org/drulabs/localdash/nsddiscovery/"/>
+        <source-file src="src/android/org/drulabs/localdash/p2psd/WiFiP2PSDReceiver.java" target-dir="src/org/drulabs/localdash/p2psd/"/>
+        <source-file src="src/android/org/drulabs/localdash/transfer/ConnectionListener.java" target-dir="src/org/drulabs/localdash/transfer/"/>
+        <source-file src="src/android/org/drulabs/localdash/transfer/DataHandler.java" target-dir="src/org/drulabs/localdash/transfer/"/>
+        <source-file src="src/android/org/drulabs/localdash/transfer/DataSender.java" target-dir="src/org/drulabs/localdash/transfer/"/>
+        <source-file src="src/android/org/drulabs/localdash/transfer/DataTransferService.java" target-dir="src/org/drulabs/localdash/transfer/"/>
+        <source-file src="src/android/org/drulabs/localdash/transfer/ITransferable.java" target-dir="src/org/drulabs/localdash/transfer/"/>
+        <source-file src="src/android/org/drulabs/localdash/transfer/TransferConstants.java" target-dir="src/org/drulabs/localdash/transfer/"/>
+        <source-file src="src/android/org/drulabs/localdash/transfer/TransferModelGenerator.java" target-dir="src/org/drulabs/localdash/transfer/"/>
+        <source-file src="src/android/org/drulabs/localdash/utils/ConnectionUtils.java" target-dir="src/org/drulabs/localdash/utils/"/>
+        <source-file src="src/android/org/drulabs/localdash/utils/Utility.java" target-dir="src/org/drulabs/localdash/utils/"/>
+        <source-file src="src/android/org/drulabs/localdash/wifidirect/WiFiDirectBroadcastReceiver.java" target-dir="src/org/drulabs/localdash/wifidirect/"/>
+
+        <framework src="com.google.code.gson:gson:2.4" />
+    </platform>
+</plugin>

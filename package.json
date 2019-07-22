@@ -1,0 +1,17 @@
+{
+  "name": "tangy-p2p-plugin",
+  "version": "0.0.1",
+  "description": "Apache Cordova plugin that supports p2p communications in Tangerine",
+  "cordova": {
+    "id": "tangy-p2p-plugin",
+    "platforms": [
+      "android"
+    ]
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-android"
+  ],
+  "author": "",
+  "license": "ISC"
+}
