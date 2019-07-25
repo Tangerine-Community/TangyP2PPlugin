@@ -13,4 +13,7 @@ exports.startRegistration = function (arg0, success, error) {
 exports.discoverPeers = function (arg0, success, error) {
     exec(success, error, 'TangyP2PPlugin', 'discoverPeers', [arg0]);
 };
+exports.transferTo = function (arg0, success, error) {
+    exec(success, error, 'TangyP2PPlugin', 'transferTo', [arg0]);
+};
 

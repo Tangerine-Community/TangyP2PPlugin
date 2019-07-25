@@ -262,6 +262,33 @@ public class TangyP2PPlugin extends CordovaPlugin implements WifiP2pManager.Peer
 //                cordova.requestPermission(this, requestCode, PERMISSION_TO_WIFI);
             }
             return true;
+        } else if ("transferTo".equals(action)) {
+            if(hasPermisssion()) {
+                Log.i(TAG, "We hasPermisssion");
+                cordova.getActivity().runOnUiThread(new Runnable() {
+                    public void run() {
+                        Log.i(TAG, "transferTo");
+                        Context context = cordova.getActivity().getApplicationContext();
+
+                        try {
+                            pluginMessage = "transferTo: " + args.toString(1);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } q
+                        Log.i(TAG, pluginMessage);
+                        pluginResult = new PluginResult(PluginResult.Status.OK, pluginMessage);
+                        pluginResult.setKeepCallback(true);
+                        cbContext.sendPluginResult(pluginResult);
+                    }
+                });
+                return true;
+            } else {
+                Log.i(TAG, "permission helper pleeeeeze");
+                PermissionHelper.requestPermissions(this, 0, permissions);
+//                cordova.requestPermissions(this, 0, permissions);
+//                cordova.requestPermission(this, requestCode, PERMISSION_TO_WIFI);
+            }
+            return true;
         }
         return false;  // Returning false results in a "MethodNotFound" error.
     }
@@ -480,6 +507,7 @@ public class TangyP2PPlugin extends CordovaPlugin implements WifiP2pManager.Peer
         List<WifiP2pDevice> devices = (new ArrayList<>());
         devices.addAll(peerList.getDeviceList());
         String deviceNames = "";
+        JSONArray jsonArray = new JSONArray();
         for (WifiP2pDevice device : devices) {
             DeviceDTO deviceDTO = new DeviceDTO();
             deviceDTO.setIp(device.deviceAddress);
@@ -491,7 +519,16 @@ public class TangyP2PPlugin extends CordovaPlugin implements WifiP2pManager.Peer
             String identifier = " ip: " + device.deviceAddress + " device.deviceName: " + device.deviceName;
             pluginMessage = deviceNames + "<br>" + identifier;
             Log.i(TAG,"Peer found! : " + identifier);
+            JSONObject deviceInfo = new JSONObject();
+            try {
+                deviceInfo.put("deviceAddress", device.deviceAddress);
+                deviceInfo.put("deviceName", device.deviceName);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            jsonArray.put(deviceInfo);
         }
+        String jsonStr = jsonArray.toString();
 
 //        navigator.notification.alert(
 //                deviceNames,  // message
@@ -507,7 +544,8 @@ public class TangyP2PPlugin extends CordovaPlugin implements WifiP2pManager.Peer
 //            Context context = cordova.getActivity().getApplicationContext();
 //            context.sendPluginResult(result);
             Log.i(TAG,"Sending message to pluginResult");
-            pluginResult = new PluginResult(PluginResult.Status.OK, pluginMessage);
+//            pluginResult = new PluginResult(PluginResult.Status.OK, pluginMessage);
+            pluginResult = new PluginResult(PluginResult.Status.OK, jsonStr);
             pluginResult.setKeepCallback(true);
             cbContext.sendPluginResult(pluginResult);
         }
