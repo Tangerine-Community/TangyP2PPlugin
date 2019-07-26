@@ -29,6 +29,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
+import android.net.NetworkInfo;
+import android.net.wifi.WpsInfo;
+import android.net.wifi.p2p.WifiP2pConfig;
+import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest;
 import android.support.v4.content.LocalBroadcastManager;
 
 import org.json.JSONArray;
@@ -101,6 +105,10 @@ public class TangyP2PPlugin extends CordovaPlugin implements WifiP2pManager.Peer
 
     private PluginResult pluginResult;
 
+    private List<WifiP2pDevice> devices = new ArrayList<WifiP2pDevice>();
+    final HashMap<String, String> buddies = new HashMap<String, String>();
+
+
 
     /**
      * Sets the context of the Command.
@@ -171,12 +179,10 @@ public class TangyP2PPlugin extends CordovaPlugin implements WifiP2pManager.Peer
                         startConnectionListener(TransferConstants.INITIAL_DEFAULT_PORT);
                         pluginMessage = "Connection Listener Running: " + isConnectionListenerRunning;
                         Log.i(TAG, pluginMessage);
-                        Log.i(TAG, "setupPeerDiscovery");
                         setupPeerDiscovery(context);
                         pluginResult = new PluginResult(PluginResult.Status.OK, pluginMessage);
                         pluginResult.setKeepCallback(true);
                         cbContext.sendPluginResult(pluginResult);
-//                        callbackContext.success(pluginMessage); // Thread-safe.
                     }
                 });
                 return true;
@@ -267,14 +273,15 @@ public class TangyP2PPlugin extends CordovaPlugin implements WifiP2pManager.Peer
                 Log.i(TAG, "We hasPermisssion");
                 cordova.getActivity().runOnUiThread(new Runnable() {
                     public void run() {
-                        Log.i(TAG, "transferTo");
-                        Context context = cordova.getActivity().getApplicationContext();
-
+                        discoverService();
                         try {
-                            pluginMessage = "transferTo: " + args.toString(1);
+                            String safeDeviceAddress = args.getString(0);
+                            String deviceAddress = safeDeviceAddress.replaceAll("_", ":");
+                            pluginMessage = "transferTo: " + deviceAddress;
+                            connect(deviceAddress);
                         } catch (JSONException e) {
                             e.printStackTrace();
-                        } q
+                        }
                         Log.i(TAG, pluginMessage);
                         pluginResult = new PluginResult(PluginResult.Status.OK, pluginMessage);
                         pluginResult.setKeepCallback(true);
@@ -346,6 +353,21 @@ public class TangyP2PPlugin extends CordovaPlugin implements WifiP2pManager.Peer
                     DataSender.sendCurrentDeviceData(context, senderIP, port, true);
                     isWDConnected = true;
                     break;
+                case WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION:
+                    if (wifiP2pManager == null) {
+                        return;
+                    }
+
+                    NetworkInfo networkInfo = (NetworkInfo) intent
+                            .getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
+
+                    if (networkInfo.isConnected()) {
+
+                        // We are connected with the other device, request connection
+                        // info to find group owner IP
+                        Log.d(TAG, "Connected to p2p network. ");
+//                        wifiP2pManager.requestConnectionInfo(wifip2pChannel, connectionListener);
+                    }
                 case DataHandler.DEVICE_LIST_CHANGED:
                     ArrayList<DeviceDTO> devices = DBAdapter.getInstance(context)
                             .getDeviceList();
@@ -410,7 +432,7 @@ public class TangyP2PPlugin extends CordovaPlugin implements WifiP2pManager.Peer
         Context context = cordova.getActivity().getApplicationContext();
 
         //  Create a string map containing information about your service.
-        String serviceName = "John Doe" + (int) (Math.random() * 1000);
+        String serviceName = "Tangerine" + (int) (Math.random() * 1000);
         Map record = new HashMap();
         record.put("listenport", String.valueOf(port));
         record.put("buddyname", serviceName);
@@ -433,12 +455,17 @@ public class TangyP2PPlugin extends CordovaPlugin implements WifiP2pManager.Peer
         wifiP2pManager.addLocalService(wifip2pChannel, serviceInfo, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
-                Log.i(TAG,"local service is now added as: " + serviceName);
+                pluginMessage = "local service is now added as: " + serviceName;
+                Log.i(TAG, pluginMessage);
+                pluginResult = new PluginResult(PluginResult.Status.OK, pluginMessage);
+                pluginResult.setKeepCallback(true);
+                cbContext.sendPluginResult(pluginResult);
             }
 
             @Override
             public void onFailure(int arg0) {
                 // Command failed.  Check for P2P_UNSUPPORTED, ERROR, or BUSY
+                Log.e(TAG,"local service addition FAILED for: " + serviceName);
             }
         });
     }
@@ -504,8 +531,12 @@ public class TangyP2PPlugin extends CordovaPlugin implements WifiP2pManager.Peer
 
         ArrayList<DeviceDTO> deviceDTOs = new ArrayList<>();
 
-        List<WifiP2pDevice> devices = (new ArrayList<>());
-        devices.addAll(peerList.getDeviceList());
+        List<WifiP2pDevice> refreshedPeers = (new ArrayList<>());
+        refreshedPeers.addAll(peerList.getDeviceList());
+        if (!refreshedPeers.equals(devices)) {
+            devices.clear();
+            devices.addAll(refreshedPeers);
+        }
         String deviceNames = "";
         JSONArray jsonArray = new JSONArray();
         for (WifiP2pDevice device : devices) {
@@ -536,20 +567,16 @@ public class TangyP2PPlugin extends CordovaPlugin implements WifiP2pManager.Peer
 //                'Peers Available',            // title
 //                'Done'                  // buttonName
 //        );
-
+        String message = "";
         if (devices.size() == 0) {
-            Log.i(TAG,"No peers found...");
+            message = "No peers found...";
         } else {
-//            result = new PluginResult(deviceNames);
-//            Context context = cordova.getActivity().getApplicationContext();
-//            context.sendPluginResult(result);
-            Log.i(TAG,"Sending message to pluginResult");
-//            pluginResult = new PluginResult(PluginResult.Status.OK, pluginMessage);
-            pluginResult = new PluginResult(PluginResult.Status.OK, jsonStr);
-            pluginResult.setKeepCallback(true);
-            cbContext.sendPluginResult(pluginResult);
+            message = "Peers found";
         }
-
+        Log.i(TAG,message);
+        pluginResult = new PluginResult(PluginResult.Status.OK, jsonStr);
+        pluginResult.setKeepCallback(true);
+        cbContext.sendPluginResult(pluginResult);
 
 //        progressBarLocalDash.setVisibility(View.GONE);
 //        deviceListFragment = new PeerListFragment();
@@ -565,12 +592,14 @@ public class TangyP2PPlugin extends CordovaPlugin implements WifiP2pManager.Peer
 
     boolean isConnectionInfoSent = false;
 
+    // TODO: Probably don't need this: only for cases where multiple devices are going to be connected to a single device
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo wifiP2pInfo) {
         Context context = cordova.getActivity().getApplicationContext();
         if (wifiP2pInfo.groupFormed && !wifiP2pInfo.isGroupOwner && !isConnectionInfoSent) {
 
             isWDConnected = true;
+            LOG.d(TAG, "onConnectionInfoAvailable: groupFormed; isWDConnected: " + isWDConnected);
 
 //            connListener.tearDown();
 //            connListener = new ConnectionListener(LocalDashWiFiDirect.this, ConnectionUtils.getPort
@@ -634,4 +663,150 @@ public class TangyP2PPlugin extends CordovaPlugin implements WifiP2pManager.Peer
 //    {
 //        PermissionHelper.requestPermissions(this, requestCode, permissions);
 //    }
+
+    //    @Override
+    public void connect(String deviceAddress) {
+        // Picking the first device found on the network.
+//        WifiP2pDevice device = peers.get(0);
+        WifiP2pDevice device = null;
+        for(WifiP2pDevice peer : devices) {
+            if(peer.deviceAddress.equals(deviceAddress)) device = peer;
+        }
+        if (device != null) {
+            WifiP2pConfig config = new WifiP2pConfig();
+            config.deviceAddress = device.deviceAddress;
+            config.wps.setup = WpsInfo.PBC;
+
+            WifiP2pDevice finalDevice = device;
+            wifiP2pManager.connect(wifip2pChannel, config, new WifiP2pManager.ActionListener() {
+
+                @Override
+                public void onSuccess() {
+                    // WiFiDirectBroadcastReceiver notifies us. Ignore for now.
+                    pluginMessage = "We connected to: " + finalDevice.deviceAddress;
+                    Log.d(TAG, pluginMessage);
+                    pluginResult = new PluginResult(PluginResult.Status.OK, pluginMessage);
+                    pluginResult.setKeepCallback(true);
+                    cbContext.sendPluginResult(pluginResult);
+                }
+
+                @Override
+                public void onFailure(int reason) {
+//                Toast.makeText(WiFiDirectActivity.this, "Connect failed. Retry.",
+//                        Toast.LENGTH_SHORT).show();
+                    pluginMessage = "Connect failed. Retry.";
+                    Log.d(TAG, pluginMessage);
+                    pluginResult = new PluginResult(PluginResult.Status.OK, pluginMessage);
+                    pluginResult.setKeepCallback(true);
+                    cbContext.sendPluginResult(pluginResult);
+                }
+            });
+        } else {
+            pluginMessage = "Cannot connect to " + deviceAddress;
+            Log.d(TAG, pluginMessage);
+            pluginResult = new PluginResult(PluginResult.Status.OK, pluginMessage);
+            pluginResult.setKeepCallback(true);
+            cbContext.sendPluginResult(pluginResult);
+        }
+    }
+
+    private void discoverService() {
+
+        WifiP2pManager.DnsSdTxtRecordListener txtListener = new WifiP2pManager.DnsSdTxtRecordListener() {
+            @Override
+            /* Callback includes:
+             * fullDomain: full domain name: e.g "printer._ipp._tcp.local."
+             * record: TXT record dta as a map of key/value pairs.
+             * device: The device running the advertised service.
+             */
+
+            public void onDnsSdTxtRecordAvailable(
+                    String fullDomain, Map record, WifiP2pDevice device) {
+                Log.d(TAG, "DnsSdTxtRecord available -" + record.toString());
+                buddies.put(device.deviceAddress, String.valueOf(record.get("buddyname")));
+            }
+        };
+
+        WifiP2pManager.DnsSdServiceResponseListener servListener = new WifiP2pManager.DnsSdServiceResponseListener() {
+            @Override
+            public void onDnsSdServiceAvailable(String instanceName, String registrationType,
+                                                WifiP2pDevice resourceType) {
+
+                // Update the device name with the human-friendly version from
+                // the DnsTxtRecord, assuming one arrived.
+                resourceType.deviceName = buddies
+                        .containsKey(resourceType.deviceAddress) ? buddies
+                        .get(resourceType.deviceAddress) : resourceType.deviceName;
+
+                // Add to the custom adapter defined specifically for showing
+                // wifi devices.
+//                WiFiDirectServicesList fragment = (WiFiDirectServicesList) getFragmentManager()
+//                        .findFragmentById(R.id.frag_peerlist);
+//                WiFiDevicesAdapter adapter = ((WiFiDevicesAdapter) fragment
+//                        .getListAdapter());
+//
+//                adapter.add(resourceType);
+//                adapter.notifyDataSetChanged();
+
+                pluginMessage = "onBonjourServiceAvailable " + instanceName
+                        + " at " + resourceType.deviceAddress
+                        + " named: " + resourceType.deviceName;
+                Log.d(TAG, pluginMessage);
+                pluginResult = new PluginResult(PluginResult.Status.OK, pluginMessage);
+                pluginResult.setKeepCallback(true);
+                cbContext.sendPluginResult(pluginResult);
+            }
+        };
+
+        wifiP2pManager.setDnsSdResponseListeners(wifip2pChannel, servListener, txtListener);
+
+        WifiP2pDnsSdServiceRequest serviceRequest = WifiP2pDnsSdServiceRequest.newInstance();
+        wifiP2pManager.addServiceRequest(wifip2pChannel,
+                serviceRequest,
+                new WifiP2pManager.ActionListener() {
+
+                    @Override
+                    public void onSuccess() {
+                        // Success!
+                        pluginMessage = "Request to join service is successful! ";
+                        Log.i(TAG, pluginMessage);
+                        pluginResult = new PluginResult(PluginResult.Status.OK, pluginMessage);
+                        pluginResult.setKeepCallback(true);
+                        cbContext.sendPluginResult(pluginResult);
+                    }
+
+                    @Override
+                    public void onFailure(int code) {
+                        // Command failed.  Check for P2P_UNSUPPORTED, ERROR, or BUSY
+                        pluginMessage = "Request to join service FAILED:  " + code;
+                        Log.i(TAG, pluginMessage);
+                        pluginResult = new PluginResult(PluginResult.Status.OK, pluginMessage);
+                        pluginResult.setKeepCallback(true);
+                        cbContext.sendPluginResult(pluginResult);
+                    }
+                });
+
+        wifiP2pManager.discoverServices(wifip2pChannel, new WifiP2pManager.ActionListener() {
+
+            @Override
+            public void onSuccess() {
+                // Success!
+                pluginMessage = "Request to discover service is successful! ";
+                Log.i(TAG, pluginMessage);
+                pluginResult = new PluginResult(PluginResult.Status.OK, pluginMessage);
+                pluginResult.setKeepCallback(true);
+                cbContext.sendPluginResult(pluginResult);
+            }
+
+            @Override
+            public void onFailure(int code) {
+                // Command failed.  Check for P2P_UNSUPPORTED, ERROR, or BUSY
+                if (code == WifiP2pManager.P2P_UNSUPPORTED) {
+                    Log.d(TAG, "P2P isn't supported on this device.");
+                } else {
+                    Log.d(TAG, "P2P discoverServices failed: " + code);
+                }
+            }
+        });
+    }
 }
