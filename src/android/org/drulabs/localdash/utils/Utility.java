@@ -45,6 +45,8 @@ import java.util.List;
  */
 public class Utility {
 
+    private static final String TAG = "TangyP2PPlugin";
+
     public static boolean copyFile(InputStream inputStream, OutputStream out) {
         byte buf[] = new byte[1024];
         int len;
@@ -136,6 +138,9 @@ public class Utility {
     }
 
     public static String getDottedDecimalIP(int ipAddr) {
+
+        String.valueOf(ipAddr);
+        Log.i(TAG, String.valueOf(ipAddr));
 
         if (ByteOrder.nativeOrder().equals(ByteOrder.LITTLE_ENDIAN)) {
             ipAddr = Integer.reverseBytes(ipAddr);

@@ -36,7 +36,7 @@ import org.rti.tangerine.p2p.TangyP2PPlugin;
 /**
  * A BroadcastReceiver that notifies of important wifi p2p events.
  */
-public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
+public class WiFiDirectBroadcastReceiverLD extends BroadcastReceiver {
 
     private WifiP2pManager manager;
     private Channel channel;
@@ -50,7 +50,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
      * @param channel  Wifi p2p channel
      * @param activity activity associated with the receiver
      */
-    public WiFiDirectBroadcastReceiver(WifiP2pManager manager, Channel channel,
+    public WiFiDirectBroadcastReceiverLD(WifiP2pManager manager, Channel channel,
                                        TangyP2PPlugin activity) {
         super();
         this.manager = manager;

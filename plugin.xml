@@ -13,6 +13,8 @@
         </config-file>
         <config-file parent="/*" target="AndroidManifest.xml"></config-file>
         <source-file src="src/android/org/rti/tangerine/p2p/TangyP2PPlugin.java" target-dir="src/org/rti/tangerine/p2p/"/>
+        <source-file src="src/android/org/rti/tangerine/p2p/FileServerAsyncTask.java" target-dir="src/org/rti/tangerine/p2p/"/>
+        <source-file src="src/android/org/rti/tangerine/p2p/WiFiDirectBroadcastReceiver.java" target-dir="src/org/rti/tangerine/p2p/"/>
         <source-file src="src/android/org/drulabs/localdash/db/DBAdapter.java" target-dir="src/org/drulabs/localdash/db/"/>
         <source-file src="src/android/org/drulabs/localdash/db/DBHelper.java" target-dir="src/org/drulabs/localdash/db/"/>
         <source-file src="src/android/org/drulabs/localdash/model/ChatDTO.java" target-dir="src/org/drulabs/localdash/model/"/>

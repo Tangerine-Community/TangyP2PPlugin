@@ -16,4 +16,7 @@ exports.discoverPeers = function (arg0, success, error) {
 exports.transferTo = function (arg0, success, error) {
     exec(success, error, 'TangyP2PPlugin', 'transferTo', [arg0]);
 };
+exports.connectP2P = function (arg0, success, error) {
+    exec(success, error, 'TangyP2PPlugin', 'connectP2P', [arg0]);
+};
 
