@@ -19,55 +19,42 @@
 
 package org.rti.tangerine.p2p;
 
-import org.apache.cordova.CordovaPlugin;
-import org.apache.cordova.CallbackContext;
-import org.apache.cordova.PermissionHelper;
-import org.apache.cordova.PluginResult;
-
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
-
-import android.net.NetworkInfo;
+import android.content.pm.PackageManager;
 import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
-import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest;
-import android.os.Build;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.content.pm.PackageManager;
-import android.Manifest;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
+import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
-import org.apache.cordova.*;
-import org.drulabs.localdash.db.DBAdapter;
-import org.drulabs.localdash.model.DeviceDTO;
-import org.drulabs.localdash.transfer.ConnectionListener;
-import org.drulabs.localdash.transfer.DataHandler;
+import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaArgs;
+import org.apache.cordova.CordovaInterface;
+import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.CordovaWebView;
+import org.apache.cordova.LOG;
+import org.apache.cordova.PermissionHelper;
+import org.apache.cordova.PluginResult;
 import org.drulabs.localdash.transfer.DataSender;
 import org.drulabs.localdash.transfer.TransferConstants;
 import org.drulabs.localdash.utils.Utility;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
-
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.HashMap;
-import java.util.Map;
-
-import android.util.Log;
-import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
+import java.util.List;
 
 public class TangyP2PPlugin extends CordovaPlugin implements WifiP2pManager.ChannelListener, WifiP2pManager.PeerListListener, WifiP2pManager.ConnectionInfoListener, WiFiDirectBroadcastReceiver.DeviceActionListener
 {
@@ -128,7 +115,6 @@ public class TangyP2PPlugin extends CordovaPlugin implements WifiP2pManager.Chan
     private List<WifiP2pDevice> peers = new ArrayList<WifiP2pDevice>();
     private WifiP2pDevice device;
 
-
     /**
      * Sets the context of the Command.
      *
@@ -141,7 +127,7 @@ public class TangyP2PPlugin extends CordovaPlugin implements WifiP2pManager.Chan
     }
 
     @Override
-    public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
+    public boolean execute(String action, CordovaArgs args, CallbackContext callbackContext) throws JSONException {
         LOG.d(TAG, "We are entering execute of TangyP2PPlugin");
         cbContext = callbackContext;
         if(action.equals("getPermission"))
@@ -163,7 +149,7 @@ public class TangyP2PPlugin extends CordovaPlugin implements WifiP2pManager.Chan
         else if ("init".equals(action)) {
             //callbackContext.success();
             //return true;
-            if(hasPermisssion()) {
+            if (hasPermisssion()) {
                 Log.i(TAG, "We hasPermisssion");
                 cordova.getActivity().runOnUiThread(new Runnable() {
                     public void run() {
@@ -935,12 +921,55 @@ public class TangyP2PPlugin extends CordovaPlugin implements WifiP2pManager.Chan
         if (wifiP2pInfo.groupFormed && wifiP2pInfo.isGroupOwner) {
             if (initFileServer == false) {
                 // start services.
-                new FileServerAsyncTask(cordova.getActivity(), "Here is my statusText.", 8080, cbContext)
-                        .execute();
-                initFileServer = true;
-                pluginMessage = "I am the server! Time to make my wares available at: " + peerIP;
-                sendPluginMessage(pluginMessage, true);
-            }
+//                new FileServerAsyncTask(cordova.getActivity(), "Here is my statusText.", 8080, cbContext)
+////                        .execute();
+//                          .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//                initFileServer = true;
+//                pluginMessage = "I am the server! Time to make my wares available at: " + peerIP;
+//                sendPluginMessage(pluginMessage, true);
+
+//                cordova.getActivity().runOnUiThread(new Runnable() {
+//                cordova.getThreadPool().execute(new Runnable() {
+//                    public void run() {
+//                        // start services.
+//                        initFileServer = true;
+//                        try {
+//                            Log.d(TAG, "FileServer started.");
+//
+//                            /**
+//                             * Create a server socket and wait for client connections. This
+//                             * call blocks until a connection is accepted from a client
+//                             */
+//                            ServerSocket serverSocket = new ServerSocket(myPort);
+//                            Socket client = serverSocket.accept();
+//                            String message = "Accepting connections on the server at " + myPort;
+//                            TangyP2PPlugin.sendPluginMessage(message, true, cbContext, TAG);
+//
+//                            /**
+//                             * If this code is reached, a client has connected and transferred data
+//                             * Save the input stream from the client as a JPEG file
+//                             */
+//                            final File f = new File(Environment.getExternalStorageDirectory() + "/"
+//                                    + context.getPackageName() + "/wifip2pshared-" + System.currentTimeMillis()
+//                                    + ".jpg");
+//
+//                            File dirs = new File(f.getParent());
+//                            if (!dirs.exists())
+//                                dirs.mkdirs();
+//                            f.createNewFile();
+//                            InputStream inputstream = client.getInputStream();
+//                            copyFile(inputstream, new FileOutputStream(f));
+//
+//                            serverSocket.close();
+////            return f.getAbsolutePath();
+//                        } catch (IOException e) {
+//                            TangyP2PPlugin.sendPluginMessage(e.getMessage(), true, cbContext, TAG);
+////                            return null;
+//                        }
+//                        String pluginMessage = "I am the server! Time to make my wares available at: " + peerIP;
+//                        sendPluginMessage(pluginMessage, true);
+//                    }
+//            });
 
         } else if (wifiP2pInfo.groupFormed) {
             pluginMessage = "I am the client! Click the connect button to send data to: " + myIP;
@@ -968,6 +997,7 @@ public class TangyP2PPlugin extends CordovaPlugin implements WifiP2pManager.Chan
                     .INITIAL_DEFAULT_PORT, true);
             isConnectionInfoSent = true;
         }
+    }
     }
 
 
@@ -1296,6 +1326,25 @@ public class TangyP2PPlugin extends CordovaPlugin implements WifiP2pManager.Chan
         String instanceName;
         String registrationType;
     }
+
+    public static boolean copyFile(InputStream inputStream, OutputStream out) {
+        byte buf[] = new byte[1024];
+        int len;
+        try {
+            while ((len = inputStream.read(buf)) != -1) {
+                out.write(buf, 0, len);
+
+            }
+            out.close();
+            inputStream.close();
+        } catch (IOException e) {
+            Log.d(TAG, e.toString());
+            return false;
+        }
+        return true;
+    }
+
 }
+
 
 
