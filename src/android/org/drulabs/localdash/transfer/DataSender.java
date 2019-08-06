@@ -84,7 +84,6 @@ public class DataSender {
             transferData = TransferModelGenerator.generateDeviceTransferModelRequestWD
                     (currentDevice);
         }
-
         sendData(context, destIP, destPort, transferData);
     }
 

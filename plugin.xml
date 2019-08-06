@@ -6,6 +6,7 @@
         <clobbers target="TangyP2PPlugin"/>
     </js-module>
     <platform name="android">
+        <framework src="org.nanohttpd:nanohttpd:+" />
         <config-file parent="/*" target="res/xml/config.xml">
             <feature name="TangyP2PPlugin">
                 <param name="android-package" value="org.rti.tangerine.p2p.TangyP2PPlugin"/>
@@ -15,6 +16,7 @@
         <source-file src="src/android/org/rti/tangerine/p2p/TangyP2PPlugin.java" target-dir="src/org/rti/tangerine/p2p/"/>
         <source-file src="src/android/org/rti/tangerine/p2p/FileServerAsyncTask.java" target-dir="src/org/rti/tangerine/p2p/"/>
         <source-file src="src/android/org/rti/tangerine/p2p/WiFiDirectBroadcastReceiver.java" target-dir="src/org/rti/tangerine/p2p/"/>
+        <source-file src="src/android/org/rti/tangerine/p2p/NanoHTTPDWebserver.java" target-dir="src/org/apache/cordova/plugin"/>
         <source-file src="src/android/org/drulabs/localdash/db/DBAdapter.java" target-dir="src/org/drulabs/localdash/db/"/>
         <source-file src="src/android/org/drulabs/localdash/db/DBHelper.java" target-dir="src/org/drulabs/localdash/db/"/>
         <source-file src="src/android/org/drulabs/localdash/model/ChatDTO.java" target-dir="src/org/drulabs/localdash/model/"/>
@@ -31,6 +33,7 @@
         <source-file src="src/android/org/drulabs/localdash/utils/ConnectionUtils.java" target-dir="src/org/drulabs/localdash/utils/"/>
         <source-file src="src/android/org/drulabs/localdash/utils/Utility.java" target-dir="src/org/drulabs/localdash/utils/"/>
         <source-file src="src/android/org/drulabs/localdash/wifidirect/WiFiDirectBroadcastReceiver.java" target-dir="src/org/drulabs/localdash/wifidirect/"/>
+
 
         <framework src="com.google.code.gson:gson:2.4" />
     </platform>
