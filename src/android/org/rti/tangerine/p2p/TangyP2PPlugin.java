@@ -217,11 +217,8 @@ public class TangyP2PPlugin extends CordovaPlugin
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-//                        String hello = "Greetings from " + mName;
-                        Log.i(TAG, "sending payloadString beginning with: " + payloadString.subSequence(0,30));
-//                        byte[] helloBytes = hello.getBytes();
+                        sendPluginMessage("sending payloadString beginning with: " + payloadString.subSequence(0,30), true);
                         byte[] payloadBytes = payloadString.getBytes();
-//                            Payload bytesPayload = Payload.fromBytes(new byte[] {0xa, 0xb, 0xc, 0xd});
                         Payload bytesPayload = Payload.fromBytes(payloadBytes);
                         send(bytesPayload);
                     }
