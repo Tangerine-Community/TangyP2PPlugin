@@ -6,7 +6,6 @@
         <clobbers target="TangyP2PPlugin"/>
     </js-module>
     <platform name="android">
-        <framework src="org.nanohttpd:nanohttpd:+" />
         <config-file parent="/*" target="res/xml/config.xml">
             <feature name="TangyP2PPlugin">
                 <param name="android-package" value="org.rti.tangerine.p2p.TangyP2PPlugin"/>
@@ -15,26 +14,20 @@
         <config-file parent="/*" target="AndroidManifest.xml"></config-file>
         <source-file src="src/android/org/rti/tangerine/p2p/TangyP2PPlugin.java" target-dir="src/org/rti/tangerine/p2p/"/>
         <source-file src="src/android/org/rti/tangerine/p2p/FileServerAsyncTask.java" target-dir="src/org/rti/tangerine/p2p/"/>
-        <source-file src="src/android/org/rti/tangerine/p2p/WiFiDirectBroadcastReceiver.java" target-dir="src/org/rti/tangerine/p2p/"/>
         <source-file src="src/android/org/rti/tangerine/p2p/NanoHTTPDWebserver.java" target-dir="src/org/apache/cordova/plugin"/>
-        <source-file src="src/android/org/drulabs/localdash/db/DBAdapter.java" target-dir="src/org/drulabs/localdash/db/"/>
-        <source-file src="src/android/org/drulabs/localdash/db/DBHelper.java" target-dir="src/org/drulabs/localdash/db/"/>
-        <source-file src="src/android/org/drulabs/localdash/model/ChatDTO.java" target-dir="src/org/drulabs/localdash/model/"/>
-        <source-file src="src/android/org/drulabs/localdash/model/DeviceDTO.java" target-dir="src/org/drulabs/localdash/model/"/>
-        <source-file src="src/android/org/drulabs/localdash/nsddiscovery/NsdHelper.java" target-dir="src/org/drulabs/localdash/nsddiscovery/"/>
-        <source-file src="src/android/org/drulabs/localdash/p2psd/WiFiP2PSDReceiver.java" target-dir="src/org/drulabs/localdash/p2psd/"/>
-        <source-file src="src/android/org/drulabs/localdash/transfer/ConnectionListener.java" target-dir="src/org/drulabs/localdash/transfer/"/>
-        <source-file src="src/android/org/drulabs/localdash/transfer/DataHandler.java" target-dir="src/org/drulabs/localdash/transfer/"/>
-        <source-file src="src/android/org/drulabs/localdash/transfer/DataSender.java" target-dir="src/org/drulabs/localdash/transfer/"/>
-        <source-file src="src/android/org/drulabs/localdash/transfer/DataTransferService.java" target-dir="src/org/drulabs/localdash/transfer/"/>
-        <source-file src="src/android/org/drulabs/localdash/transfer/ITransferable.java" target-dir="src/org/drulabs/localdash/transfer/"/>
-        <source-file src="src/android/org/drulabs/localdash/transfer/TransferConstants.java" target-dir="src/org/drulabs/localdash/transfer/"/>
-        <source-file src="src/android/org/drulabs/localdash/transfer/TransferModelGenerator.java" target-dir="src/org/drulabs/localdash/transfer/"/>
-        <source-file src="src/android/org/drulabs/localdash/utils/ConnectionUtils.java" target-dir="src/org/drulabs/localdash/utils/"/>
-        <source-file src="src/android/org/drulabs/localdash/utils/Utility.java" target-dir="src/org/drulabs/localdash/utils/"/>
-        <source-file src="src/android/org/drulabs/localdash/wifidirect/WiFiDirectBroadcastReceiver.java" target-dir="src/org/drulabs/localdash/wifidirect/"/>
-
-
         <framework src="com.google.code.gson:gson:2.4" />
+        <framework src="org.nanohttpd:nanohttpd:+" />
+        <framework src="com.google.android.gms:play-services-nearby:17.0.0" />
+
+        <config-file target="app/src/main/AndroidManifest.xml" parent="/manifest">
+            <uses-permission android:name="android.permission.INTERNET" />
+            <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+            <uses-permission android:name="android.permission.BLUETOOTH" />
+            <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+            <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+            <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+            <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+        </config-file>
+
     </platform>
 </plugin>

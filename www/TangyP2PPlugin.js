@@ -4,16 +4,14 @@ var exec = require('cordova/exec');
 exports.getPermission = function (arg0, success, error) {
     exec(success, error, 'TangyP2PPlugin', 'getPermission', [arg0]);
 };
-exports.init = function (arg0, success, error) {
-    exec(success, error, 'TangyP2PPlugin', 'init', [arg0]);
+exports.startAdvertising = function (arg0, success, error) {
+    exec(success, error, 'TangyP2PPlugin', 'startAdvertising', [arg0]);
 };
-exports.discoverPeers = function (arg0, success, error) {
-    exec(success, error, 'TangyP2PPlugin', 'discoverPeers', [arg0]);
+exports.startDiscovery = function (arg0, success, error) {
+    exec(success, error, 'TangyP2PPlugin', 'startDiscovery', [arg0]);
 };
-exports.transferTo = function (arg0, success, error) {
-    exec(success, error, 'TangyP2PPlugin', 'transferTo', [arg0]);
+exports.transferData = function (arg0, success, error) {
+    exec(success, error, 'TangyP2PPlugin', 'transferData', [arg0]);
 };
-exports.connectP2P = function (arg0, success, error) {
-    exec(success, error, 'TangyP2PPlugin', 'connectP2P', [arg0]);
-};
+
 
