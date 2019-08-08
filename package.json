@@ -12,6 +12,10 @@
     "ecosystem:cordova",
     "cordova-android"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tangerine-Community/TangyP2PPlugin"
+  },
   "author": "",
   "license": "ISC"
 }

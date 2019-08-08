@@ -1,26 +1,62 @@
 # TangyP2PPlugin
 
-Inspired by [drulabs/LocalDash](https://github.com/drulabs/LocalDash) and [Create P2P connections with Wi-Fi Direct]
-(https://developer.android.com/training/connect-devices-wirelessly/wifi-direct#java)
+This plugin implements the Android [Nearby Conections](https://developers.google.com/nearby/connections/overview) API.
+
+The following instructions include details very specific to [Tangerine](https://github.com/Tangerine-Community/Tangerine),
+ the project in which this project is being deployed.
 
 ## Usage:
 
 ```
-  <script>
+
+  async getTangyP2PPermissions() {
     if (this.window.isCordovaApp) {
-      document.addEventListener('deviceready', () => {
-        console.log("deviceready! Gonna run TangyP2PPlugin init now.")
-        TangyP2PPlugin.init();
-      }, false);
-    } else {
-      console.log("not a cordova app.")
+      window['TangyP2PPlugin'].getPermission(null, function(message) {
+        console.log('Message from getTangyP2PPermissions: ' + message);
+      }, function(err) {
+        console.log('TangyP2P error:: ' + err);
+      });
     }
-  </script>
+  }
+
+  async startAdvertising() {
+    if (this.window.isCordovaApp) {
+      window['TangyP2PPlugin'].startAdvertising(null, function(message) {
+        console.log('Message: ' + message);
+        document.querySelector('#p2p-results').innerHTML += message + '<br/>';
+      }, function(err) {
+        console.log('TangyP2P error:: ' + err);
+      });
+    }
+  }
+
+  async startDiscovery() {
+    if (this.window.isCordovaApp) {
+      window['TangyP2PPlugin'].startDiscovery(null, function(message) {
+        console.log('Message: ' + message);
+        document.querySelector('#p2p-results').innerHTML += message + '<br/>';
+      }, function(err) {
+        console.log('TangyP2P error:: ' + err);
+      });
+    }
+  }
+
+  async transferData() {
+    if (this.window.isCordovaApp) {
+      window['TangyP2PPlugin'].transferData(null, function(message) {
+        console.log('Message: ' + message);
+        document.querySelector('#p2p-results').innerHTML += message + '<br/>';
+      }, function(err) {
+        console.log('TangyP2P error:: ' + err);
+      });
+    }
+  }
+
 ```
 
 ## Development
 
-Clone TangyP2PPlugin-Android and do your Android development in it - it is a proper Android project (Java syntax highlighting).
+Clone [TangyP2PPlugin-Android](https://github.com/Tangerine-Community/TangyP2PPlugin-Android) and do your Android development in it - it is a proper Android project (Java syntax highlighting).
 When you do a build it has a target that copies TangyP2PPlugin.java (only that one file) source into TangyP2PPlugin/arc/android
 
 Updating the plugin in Tangerine:
