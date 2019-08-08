@@ -22,8 +22,9 @@ package org.rti.tangerine.p2p;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.nearby.Nearby;
@@ -210,11 +211,18 @@ public class TangyP2PPlugin extends CordovaPlugin
                 cordova.getActivity().runOnUiThread(new Runnable() {
                     public void run() {
                         Log.i(TAG, "transferData");
-                        String hello = "Greetings from " + mName;
-                        Log.i(TAG, "sending: " + hello);
-                        byte[] helloBytes = hello.getBytes();
+                        String payloadString = "";
+                        try {
+                            payloadString = args.getString(0);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+//                        String hello = "Greetings from " + mName;
+                        Log.i(TAG, "sending payloadString beginning with: " + payloadString.subSequence(0,30));
+//                        byte[] helloBytes = hello.getBytes();
+                        byte[] payloadBytes = payloadString.getBytes();
 //                            Payload bytesPayload = Payload.fromBytes(new byte[] {0xa, 0xb, 0xc, 0xd});
-                        Payload bytesPayload = Payload.fromBytes(helloBytes);
+                        Payload bytesPayload = Payload.fromBytes(payloadBytes);
                         send(bytesPayload);
                     }
                 });
