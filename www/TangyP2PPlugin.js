@@ -13,5 +13,8 @@ exports.startDiscovery = function (arg0, success, error) {
 exports.transferData = function (arg0, success, error) {
     exec(success, error, 'TangyP2PPlugin', 'transferData', [arg0]);
 };
+exports.listenForTransfer = function (arg0, success, error) {
+    exec(success, error, 'TangyP2PPlugin', 'listenForTransfer', [arg0]);
+};
 
 

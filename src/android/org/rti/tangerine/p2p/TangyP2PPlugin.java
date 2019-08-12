@@ -190,6 +190,24 @@ public class TangyP2PPlugin extends CordovaPlugin
                 sendPluginMessage(message, true);
             }
             return true;
+        }
+        else if ("listenForTransfer".equals(action)) {
+            if (hasPermisssion()) {
+                Log.i(TAG, "We hasPermisssion");
+                cordova.getActivity().runOnUiThread(new Runnable() {
+                    public void run() {
+                        Log.i(TAG, "listenForTransfer");
+                        setState(State.SEARCHING);
+                    }
+                });
+                return true;
+            } else {
+                String message = "Requesting permissions";
+//                Log.i(TAG, message);
+                PermissionHelper.requestPermissions(this, 0, permissions);
+                sendPluginMessage(message, true);
+            }
+            return true;
         } else if ("startDiscovery".equals(action)) {
             if(hasPermisssion()) {
                 Log.i(TAG, "We hasPermisssion");
@@ -434,7 +452,9 @@ public class TangyP2PPlugin extends CordovaPlugin
             new PayloadCallback() {
                 @Override
                 public void onPayloadReceived(String endpointId, Payload payload) {
-                    logD(String.format("onPayloadReceived(endpointId=%s, payload=%s)", endpointId, payload));
+//                    logD(String.format("onPayloadReceived from (endpointId=%s)", endpointId));
+                    String pluginMessage = String.format("onPayloadReceived from (endpointId=%s)", endpointId);
+                    Log.d(TAG, pluginMessage);
                     onReceive(mEstablishedConnections.get(endpointId), payload);
                 }
 
@@ -979,7 +999,7 @@ public class TangyP2PPlugin extends CordovaPlugin
 //            // payload. You can check the payload type with payload.getType().
             byte[] receivedBytes = payload.asBytes();
             String message = new String(receivedBytes);
-            TangyP2PPlugin.sendPluginMessage("Data transfer message: " + message, true, cbContext, TAG);
+            TangyP2PPlugin.sendPluginMessage(message, true, cbContext, TAG);
     }
 
 }
