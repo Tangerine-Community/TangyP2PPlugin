@@ -13,10 +13,8 @@
         </config-file>
         <config-file parent="/*" target="AndroidManifest.xml"></config-file>
         <source-file src="src/android/org/rti/tangerine/p2p/TangyP2PPlugin.java" target-dir="src/org/rti/tangerine/p2p/"/>
-        <source-file src="src/android/org/rti/tangerine/p2p/FileServerAsyncTask.java" target-dir="src/org/rti/tangerine/p2p/"/>
-        <source-file src="src/android/org/rti/tangerine/p2p/NanoHTTPDWebserver.java" target-dir="src/org/apache/cordova/plugin"/>
+        <source-file src="src/android/org/rti/tangerine/p2p/Message.java" target-dir="src/org/rti/tangerine/p2p/"/>
         <framework src="com.google.code.gson:gson:2.4" />
-        <framework src="org.nanohttpd:nanohttpd:+" />
         <framework src="com.google.android.gms:play-services-nearby:17.0.0" />
 
         <config-file target="app/src/main/AndroidManifest.xml" parent="/manifest">
