@@ -9,6 +9,7 @@ public class Message extends JSONObject {
     private JSONObject object = null;
 
     public Message(String messageType, String message, JSONObject object) {
+        super();
         this.messageType = messageType;
         this.message = message;
         this.object = object;

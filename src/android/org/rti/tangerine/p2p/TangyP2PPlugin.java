@@ -259,8 +259,19 @@ public class TangyP2PPlugin extends CordovaPlugin
      */
     private void sendPluginMessage(String pluginMessage, boolean keepCallback, String messageType, JSONObject object) {
         Log.d(TAG, pluginMessage);
-        Message messageObject = new Message(messageType,pluginMessage, object);
-        pluginResult = new PluginResult(PluginResult.Status.OK, messageObject);
+//        Message messageObject = new Message(messageType,pluginMessage, object);
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("messageType", messageType);
+            jsonObject.put("message", pluginMessage);
+            jsonObject.put("object", object);
+        } catch (JSONException e) {
+            Log.e(TAG, "sendPluginMessage Error: " + e.getMessage());
+            e.printStackTrace();
+        }
+        String jsonString = jsonObject.toString();
+        Log.d(TAG, "jsonString: "  + jsonString);
+        pluginResult = new PluginResult(PluginResult.Status.OK, jsonObject);
         pluginResult.setKeepCallback(keepCallback);
         cbContext.sendPluginResult(pluginResult);
     }
@@ -277,8 +288,19 @@ public class TangyP2PPlugin extends CordovaPlugin
             tag = TAG;
         }
         Log.d(tag, pluginMessage);
-        Message messageObject = new Message(messageType,pluginMessage, object);
-        PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, messageObject);
+//        Message messageObject = new Message(messageType,pluginMessage, object);
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("messageType", messageType);
+            jsonObject.put("message", pluginMessage);
+            jsonObject.put("object", object);
+        } catch (JSONException e) {
+            Log.e(tag, "sendPluginMessage Error: " + e.getMessage());
+            e.printStackTrace();
+        }
+        String jsonString = jsonObject.toString();
+        Log.d(tag, "jsonString: "  + jsonString);
+        PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, jsonObject);
         pluginResult.setKeepCallback(keepCallback);
         cbContext.sendPluginResult(pluginResult);
     }
